@@ -3,8 +3,8 @@
     <meta charset="utf-8"/>
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Kubernetes介绍和基本概念 | nobuggeek</title>
-<link rel="shortcut icon" href="https://liuhuipy.github.io/favicon.ico?v=1591683784787">
+<title>Kubernetes的介绍、集群部署和基本概念 | nobuggeek</title>
+<link rel="shortcut icon" href="https://liuhuipy.github.io/favicon.ico?v=1591704228032">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://liuhuipy.github.io/styles/main.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -87,7 +87,7 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    Kubernetes介绍和基本概念
+                    Kubernetes的介绍、集群部署和基本概念
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
@@ -108,14 +108,88 @@
                     
                 </div>
                 <div class="post-content">
-                    <p>Kubernetes是一个全新的基于容器技术的分布式架构解决方案，是谷歌十几年以来大规模应用容器技术的经验积累和升华的重要成果。Kubernetes源自于谷歌一个叫Borg的内部容器管理系统（后来还有一个新系统叫Omega），谷歌部署Borg系统对来自于成千上万个应用程序所提交的job进行接收、调试、启动、停止、重启和监控，它基于容器技术，目的是实现资源管理的自动化，以及跨多个数据中心资源利用率的最大化。而横空出世的Kubernetes项目正是提取了Borg最精华的部分，使开发者能够更简单、直接地管理应用。</p>
+                    <p>Kubernetes简介、集群部署、基本概念</p>
+<!-- more -->
+<p>Kubernetes是一个全新的基于容器技术的分布式架构解决方案，是谷歌十几年以来大规模应用容器技术的经验积累和升华的重要成果。Kubernetes源自于谷歌一个叫Borg的内部容器管理系统（后来还有一个新系统叫Omega），谷歌部署Borg系统对来自于成千上万个应用程序所提交的job进行接收、调试、启动、停止、重启和监控，它基于容器技术，目的是实现资源管理的自动化，以及跨多个数据中心资源利用率的最大化。而横空出世的Kubernetes项目正是提取了Borg最精华的部分，使开发者能够更简单、直接地管理应用。</p>
 <p>Kubernetes是一个完备的分布式系统支撑平台。Kubernetes具有完备的集群管理能力，包括多层次的安全防护和准入机制、多租户应用支撑能力、透明的服务注册和服务发现机制、智能的负载均衡器、强大的故障发现和自我修复能力、服务滚动升级和在线扩容能力、可扩展的资源自动调度机制，以及多粒度的资源配额管理能力。</p>
 <h2 id="kubernetes的核心功能">Kubernetes的核心功能：</h2>
 <p>🌵帮助开发者聚焦核心应用功能：Kubernetes可以被看作一个操作系统，应用所需要的基础设施不用开发者来担心。他们现在依赖于Kubernetes来提供这些服务，包括服务发现、扩容、负载均衡、自恢复。应用程序开发者因此能集中实现应用本身的功能而不用花时间在集成应用和基础设施上。<br>
 🌳帮助运维团队获取更高的服务器资源利用率：Kubernetes自动调度应用容器到集群的某个节点上，Kubernetes能在任何时间迁移应用并通过混合和匹配应用来获得比运维手动调度高很多的资源利用率。</p>
+<h2 id="kubernetes安装与配置">Kubernetes安装与配置</h2>
+<h3 id="kubernetes集群搭建方式">Kubernetes集群搭建方式：</h3>
+<ul>
+<li>kubeadm：Kubernetes 1.4开始新增的特性，用于快速搭建Kubernetes集群；</li>
+<li>minikube：快速搭建一个运行在本地的单节点的Kubernetes；</li>
+<li>二进制安装：下载Kubernetes所需组件的二进制包，一步步安装。</li>
+</ul>
+<p>🍏为了更好的了解、熟悉Kubernetes集群的各个组件，本文采用二进制部署Kubernetes集群。</p>
+<h3 id="集群详情">集群详情</h3>
+<ul>
+<li>OS：Centos Linux version 3.10.0-1127.el7.x86_64</li>
+<li>Kubernetes 1.x</li>
+<li>Docker：docker-1.13.1-161.git64e9980.el7_8.x86_64</li>
+<li>Etcd 3.1.5</li>
+<li>Flannel 0.7.1</li>
+<li>TLS认证通信</li>
+<li>RBAC授权</li>
+<li>kubelet TLS Bootstrapping</li>
+<li>kubedns、dashboard、heapster（influxdb、grafana）、EFK（elasticsearch、fluentd、kibana）集群插件</li>
+<li>私有化docker镜像仓库harbor</li>
+</ul>
+<h3 id="环境说明">环境说明</h3>
+<ul>
+<li>镜像仓库：IP：192.168.143.133，Domain：harbor.liuhui.io</li>
+<li>Etcd：192.168.143.128，192.168.143.129，192.168.143.130高可用etcd集群</li>
+<li>Master：192.168.143.128，192.168.143.129，192.168.143.130三台，高可用</li>
+<li>Node：192.168.143.128，192.168.143.129，192.168.143.130，192.168.143.131，192.168.143.122五台Node节点</li>
+</ul>
+<h3 id="安装前准备">安装前准备</h3>
+<ul>
+<li>环境说明</li>
+<li>每个节点上安装Docker</li>
+</ul>
+<pre><code>yum install docker -y
+</code></pre>
+<ul>
+<li>关闭所有节点的Selinux</li>
+</ul>
+<pre><code>vi /etc/selinux/config进入文件中修改配置SELINUX=disabled，然后重启服务器。
+</code></pre>
+<ul>
+<li>准备harbor私有镜像仓库</li>
+</ul>
+<h3 id="创建tls证书和秘钥">创建TLS证书和秘钥</h3>
+<h3 id="安装kubectl命令行工具">安装kubectl命令行工具</h3>
+<h3 id="配置分发kubeconfig文件">配置分发kubeconfig文件</h3>
+<h3 id="创建高可用etcd集群">创建高可用etcd集群</h3>
+<p>kubernetes系统使用etcd存储所有数据，部署三个节点高可用etcd集群，复用kubernetes master的节点：</p>
+<ul>
+<li>192.168.143.128</li>
+<li>192.168.143.129</li>
+<li>192.168.143.130</li>
+</ul>
+<h4 id="tls认证文件">TLS认证文件</h4>
+<p>这里复用kubernetes master创建的kubernetes证书</p>
+<pre><code>scp bootstrap.kubeconfig kube-proxy.kubeconfig root@192.168.143.129:/etc/kubernetes/
+scp bootstrap.kubeconfig kube-proxy.kubeconfig root@192.168.143.130:/etc/kubernetes/
+</code></pre>
 <h2 id="kubernetes基本概念">Kubernetes基本概念</h2>
+<p>Kubernetes集群架构：<br>
+<img src="https://liuhuipy.github.io/post-images/1591687453392.png" alt="" loading="lazy"></p>
 <h3 id="master">Master</h3>
-<p>Kubernetes采用Master作为集群控制中心节点，每个Kubernetes集群里需要有一个Master节点来负责整个集群的管理和控制</p>
+<p>Kubernetes采用Master作为集群控制中心节点，每个Kubernetes集群里需要有一个Master节点来负责整个集群的管理和控制，Master节点上运行着一组进程：</p>
+<ul>
+<li>Kubernetes API Server（kube-apiserver）：提供了HTTP Rest接口的关键服务进程，是Kubernetes所有资源的增、删、改、查等操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制，是集群控制的入口进程。</li>
+<li>Kubernetes Controller Manager（kube-controller-manager）：Kubernetes所有资源对象的自动化控制中心，负责维护集群的状态，比如故障检测、自动扩展、滚动更新等。</li>
+<li>Kubernetes Scheduler（kube-scheduler）：负责资源调度（Pod调度）的进程。</li>
+</ul>
+<h3 id="node">Node</h3>
+<p>Kubernetes集群中除了Master节点的其他节点称为Node节点。与Master一样，Node节点可以是一台物理主机，也可以是一台虚拟机。Node节点才是Kubernetes集群中的工作负载节点，每个Node都会被分配一些工作负载(Pod)，当某个Node宕机时，这些负载会被分配到其他工作节点中。每个Node节点上都运行着以下一组关键进程：</p>
+<ul>
+<li>kubelet：负责Pod对应的容器的创建、启停等任务。</li>
+<li>kube-proxy：实现Kubernetes Service的通信与负载均衡机制的重要组件。</li>
+<li>Docker Engine（Docker）：Docker容器引擎，负责工作节点的容器创建和管理工作。</li>
+</ul>
 
                 </div>
             </article>
