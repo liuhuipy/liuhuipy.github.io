@@ -3,7 +3,7 @@
     <meta charset="utf-8"/>
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>关于 | nobuggeek</title>
+<title>Kubernetes介绍和基本概念 | nobuggeek</title>
 <link rel="shortcut icon" href="https://liuhuipy.github.io/favicon.ico?v=1591683784787">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://liuhuipy.github.io/styles/main.css">
@@ -87,39 +87,47 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    关于
+                    Kubernetes介绍和基本概念
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2019-01-25 ·
+                        · 2020-06-09 ·
                     </time>
+                    
+                        <a href="https://liuhuipy.github.io/tag/1BPzjQv9Z/" class="post-tags">
+                            # Devops
+                        </a>
+                    
+                        <a href="https://liuhuipy.github.io/tag/DCBrCTQ9Z/" class="post-tags">
+                            # Kubernetes
+                        </a>
+                    
+                        <a href="https://liuhuipy.github.io/tag/CP6_bOFZEr/" class="post-tags">
+                            # Docker
+                        </a>
                     
                 </div>
                 <div class="post-content">
-                    <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！❤️</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<ul>
-<li>个人网站，技术交流，Python、Golang、前端、Devops、Docker、Kubernetes等</li>
-</ul>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<ul>
-<li>琅琊榜第一BUG，github id=liuhuipy</li>
-</ul>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<ul>
-<li>coding</li>
-</ul>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<ul>
-<li>liuhui_py@163.com</li>
-</ul>
+                    <p>Kubernetes是一个全新的基于容器技术的分布式架构解决方案，是谷歌十几年以来大规模应用容器技术的经验积累和升华的重要成果。Kubernetes源自于谷歌一个叫Borg的内部容器管理系统（后来还有一个新系统叫Omega），谷歌部署Borg系统对来自于成千上万个应用程序所提交的job进行接收、调试、启动、停止、重启和监控，它基于容器技术，目的是实现资源管理的自动化，以及跨多个数据中心资源利用率的最大化。而横空出世的Kubernetes项目正是提取了Borg最精华的部分，使开发者能够更简单、直接地管理应用。</p>
+<p>Kubernetes是一个完备的分布式系统支撑平台。Kubernetes具有完备的集群管理能力，包括多层次的安全防护和准入机制、多租户应用支撑能力、透明的服务注册和服务发现机制、智能的负载均衡器、强大的故障发现和自我修复能力、服务滚动升级和在线扩容能力、可扩展的资源自动调度机制，以及多粒度的资源配额管理能力。</p>
+<h2 id="kubernetes的核心功能">Kubernetes的核心功能：</h2>
+<p>🌵帮助开发者聚焦核心应用功能：Kubernetes可以被看作一个操作系统，应用所需要的基础设施不用开发者来担心。他们现在依赖于Kubernetes来提供这些服务，包括服务发现、扩容、负载均衡、自恢复。应用程序开发者因此能集中实现应用本身的功能而不用花时间在集成应用和基础设施上。<br>
+🌳帮助运维团队获取更高的服务器资源利用率：Kubernetes自动调度应用容器到集群的某个节点上，Kubernetes能在任何时间迁移应用并通过混合和匹配应用来获得比运维手动调度高很多的资源利用率。</p>
+<h2 id="kubernetes基本概念">Kubernetes基本概念</h2>
+<h3 id="master">Master</h3>
+<p>Kubernetes采用Master作为集群控制中心节点，每个Kubernetes集群里需要有一个Master节点来负责整个集群的管理和控制</p>
 
                 </div>
             </article>
         </div>
 
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://liuhuipy.github.io/post/kubernetes-node/" class="post-title gt-a-link">
+                    Kubernetes学习笔记
+                </a>
+            </div>
         
 
         
