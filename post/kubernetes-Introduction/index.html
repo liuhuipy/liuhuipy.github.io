@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Kubernetes的介绍、基本概念和集群安装部署 | nobuggeek</title>
-<link rel="shortcut icon" href="https://liuhuipy.github.io/favicon.ico?v=1591778238609">
+<link rel="shortcut icon" href="https://liuhuipy.github.io/favicon.ico?v=1591781592740">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://liuhuipy.github.io/styles/main.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -570,6 +570,187 @@ member c507e67572829987 is healthy: got healthy result from https://192.168.143.
 cluster is healthy
 </code></pre>
 <h3 id="部署master节点">部署master节点</h3>
+<p>Kubernetes master节点包含的组件：</p>
+<ul>
+<li>kube-apiserver</li>
+<li>kube-scheduler</li>
+<li>kube-controller-manager</li>
+</ul>
+<h4 id="下载对应的kubernetes版本">下载对应的Kubernetes版本</h4>
+<pre><code>wget https://dl.k8s.io/v1.6.0/kubernetes-server-linux-amd64.tar.gz
+tar -xzvf kubernetes-server-linux-amd64.tar.gz
+cd kubernetes
+tar -xzvf  kubernetes-src.tar.gz
+cp -r server/bin/{kube-apiserver,kube-controller-manager,kube-scheduler,kubectl,kube-proxy,kubelet} /usr/local/bin/
+</code></pre>
+<h4 id="配置kube-apiserver-kube-scheduler-kube-controller-manager文件">配置kube-apiserver、kube-scheduler、kube-controller-manager文件</h4>
+<p>添加/etc/kubernetes/config文件：</p>
+<pre><code>###
+# kubernetes system config
+#
+# The following values are used to configure various aspects of all
+# kubernetes services, including
+#
+#   kube-apiserver.service
+#   kube-controller-manager.service
+#   kube-scheduler.service
+#   kubelet.service
+#   kube-proxy.service
+# logging to stderr means we get it in the systemd journal
+KUBE_LOGTOSTDERR=&quot;--logtostderr=true&quot;
+
+# journal message level, 0 is debug
+KUBE_LOG_LEVEL=&quot;--v=0&quot;
+
+# Should this cluster be allowed to run privileged docker containers
+KUBE_ALLOW_PRIV=&quot;--allow-privileged=true&quot;
+
+# How the controller-manager, scheduler, and proxy find the apiserver
+KUBE_MASTER=&quot;--master=http://192.168.143.128:8080&quot;
+</code></pre>
+<p>该配置文件同时被kube-apiserver、kube-scheduler、kube-controller-manager、kubelet、kube-proxy使用。</p>
+<p>添加apiserver配置文件/etc/kubernetes/apiserver：</p>
+<pre><code>###
+## kubernetes system config
+##
+## The following values are used to configure the kube-apiserver
+##
+#
+## The address on the local server to listen to.
+KUBE_API_ADDRESS=&quot;--advertise-address=192.168.143.128 --bind-address=192.168.143.128 --insecure-bind-address=192.168.143.128&quot;
+#
+## The port on the local server to listen on.
+#KUBE_API_PORT=&quot;--port=8080&quot;
+#
+## Port minions listen on
+#KUBELET_PORT=&quot;--kubelet-port=10250&quot;
+#
+## Comma separated list of nodes in the etcd cluster
+KUBE_ETCD_SERVERS=&quot;--etcd-servers=https://192.168.143.128:2379,https://192.168.143.129:2379,https://192.168.143.130:2379&quot;
+#
+## Address range to use for services
+KUBE_SERVICE_ADDRESSES=&quot;--service-cluster-ip-range=10.254.0.0/16&quot;
+#
+## default admission control policies
+KUBE_ADMISSION_CONTROL=&quot;--admission-control=ServiceAccount,NamespaceLifecycle,NamespaceExists,LimitRanger,ResourceQuota&quot;
+#
+## Add your own!
+KUBE_API_ARGS=&quot;--authorization-mode=RBAC --runtime-config=rbac.authorization.k8s.io/v1beta1 --kubelet-https=true --experimental-bootstrap-token-auth --token-auth-file=/etc/kubernetes/token.csv --service-node-port-range=30000-32767 --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem --client-ca-file=/etc/kubernetes/ssl/ca.pem --service-account-key-file=/etc/kubernetes/ssl/ca-key.pem --etcd-cafile=/etc/kubernetes/ssl/ca.pem --etcd-certfile=/etc/kubernetes/ssl/kubernetes.pem --etcd-keyfile=/etc/kubernetes/ssl/kubernetes-key.pem --enable-swagger-ui=true --apiserver-count=3 --audit-log-maxage=30 --audit-log-maxbackup=3 --audit-log-maxsize=100 --audit-log-path=/var/lib/audit.log --event-ttl=1h&quot;
+</code></pre>
+<p>添加scheduler配置文件/etc/kubernetes/scheduler：</p>
+<pre><code>###
+# kubernetes scheduler config
+
+# default config should be adequate
+
+# Add your own!
+KUBE_SCHEDULER_ARGS=&quot;--leader-elect=true --address=127.0.0.1&quot;
+</code></pre>
+<p>添加controller-manager配置文件/etc/kubernetes/controller-manager：</p>
+<pre><code>###
+# The following values are used to configure the kubernetes controller-manager
+
+# defaults from config and apiserver should be adequate
+
+# Add your own!
+KUBE_CONTROLLER_MANAGER_ARGS=&quot;--address=127.0.0.1 --service-cluster-ip-range=10.254.0.0/16 --cluster-name=kubernetes --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.pem --cluster-signing-key-file=/etc/kubernetes/ssl/ca-key.pem  --service-account-private-key-file=/etc/kubernetes/ssl/ca-key.pem --root-ca-file=/etc/kubernetes/ssl/ca.pem --leader-elect=true&quot;
+</code></pre>
+<h4 id="创建kube-apiserver-service配置文件和启动kube-apiserver">创建kube-apiserver service配置文件和启动kube-apiserver</h4>
+<p>创建kube-apiserver的service配置文件/usr/lib/systemd/system/kube-apiserver.service：</p>
+<pre><code>[Unit]
+Description=Kubernetes API Service
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+After=etcd.service
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/apiserver
+ExecStart=/usr/local/bin/kube-apiserver \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_LOG_LEVEL \
+        $KUBE_ETCD_SERVERS \
+        $KUBE_API_ADDRESS \
+        $KUBE_API_PORT \
+        $KUBELET_PORT \
+        $KUBE_ALLOW_PRIV \
+        $KUBE_SERVICE_ADDRESSES \
+        $KUBE_ADMISSION_CONTROL \
+        $KUBE_API_ARGS
+Restart=on-failure
+Type=notify
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>启动kube-apiserver</p>
+<pre><code>systemctl daemon-reload
+systemctl enable kube-apiserver
+systemctl start kube-apiserver
+systemctl status kube-apiserver
+</code></pre>
+<h4 id="创建kube-scheduler-service文件和启动kube-scheduler">创建kube-scheduler service文件和启动kube-scheduler</h4>
+<p>创建kube-scheduler的service配置文件/usr/lib/systemd/system/kube-scheduler.service：</p>
+<pre><code>[Unit]
+Description=Kubernetes Scheduler Plugin
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/scheduler
+ExecStart=/usr/local/bin/kube-scheduler \
+            $KUBE_LOGTOSTDERR \
+            $KUBE_LOG_LEVEL \
+            $KUBE_MASTER \
+            $KUBE_SCHEDULER_ARGS
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>启动kube-scheduler</p>
+<pre><code>systemctl daemon-reload
+systemctl enable kube-scheduler
+systemctl start kube-scheduler
+systemctl status kube-scheduler
+</code></pre>
+<h4 id="创建kube-controller-manager-service文件和启动kube-controller-manager">创建kube-controller-manager service文件和启动kube-controller-manager</h4>
+<p>创建kube-controller-manager的service配置文件/usr/lib/systemd/kube-controller-manager.service：</p>
+<pre><code>[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/config
+EnvironmentFile=-/etc/kubernetes/controller-manager
+ExecStart=/usr/local/bin/kube-controller-manager \
+        $KUBE_LOGTOSTDERR \
+        $KUBE_LOG_LEVEL \
+        $KUBE_MASTER \
+        $KUBE_CONTROLLER_MANAGER_ARGS
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>启动kube-controller-manager</p>
+<pre><code>systemctl daemon-reload
+systemctl enable kube-controller-manager
+systemctl start kube-controller-manager
+systemctl status kube-controller-manager
+</code></pre>
+<h4 id="验证master节点功能">验证master节点功能</h4>
+<pre><code># kubectl get componentstatuses
+NAME                 STATUS    MESSAGE              ERROR
+scheduler            Healthy   ok
+controller-manager   Healthy   ok
+etcd-1               Healthy   {&quot;health&quot;: &quot;true&quot;}
+etcd-0               Healthy   {&quot;health&quot;: &quot;true&quot;}
+etcd-2               Healthy   {&quot;health&quot;: &quot;true&quot;}
+</code></pre>
 <h2 id="kubernetes基本概念">🌴Kubernetes基本概念</h2>
 <p>Kubernetes集群架构：<br>
 <img src="https://liuhuipy.github.io/post-images/1591687453392.png" alt="" loading="lazy"></p>
