@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://liuhuipy.github.io</id>
     <title>nobuggeek</title>
-    <updated>2020-06-10T09:33:36.295Z</updated>
+    <updated>2020-06-12T15:26:06.861Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://liuhuipy.github.io"/>
     <link rel="self" href="https://liuhuipy.github.io/atom.xml"/>
@@ -38,7 +38,7 @@
 <h3 id="集群详情">集群详情</h3>
 <ul>
 <li>OS：Centos Linux version 3.10.0-1127.el7.x86_64</li>
-<li>Kubernetes 1.18.0</li>
+<li>Kubernetes 1.16.0</li>
 <li>Docker：docker-1.13.1-161.git64e9980.el7_8.x86_64</li>
 <li>Etcd 3.1.5</li>
 <li>Flannel 0.7.1</li>
@@ -661,6 +661,8 @@ etcd-1               Healthy   {&quot;health&quot;: &quot;true&quot;}
 etcd-0               Healthy   {&quot;health&quot;: &quot;true&quot;}
 etcd-2               Healthy   {&quot;health&quot;: &quot;true&quot;}
 </code></pre>
+<h3 id="部署node节点">部署node节点</h3>
+<h3 id="安装dashboard">安装dashboard</h3>
 <h2 id="kubernetes基本概念">🌴Kubernetes基本概念</h2>
 <p>Kubernetes集群架构：<br>
 <img src="https://liuhuipy.github.io/post-images/1591687453392.png" alt="" loading="lazy"></p>
